@@ -1,0 +1,34 @@
+tfidf_vector = TfidfVectorizer(
+    stop_words = 'english',
+    ngram_range = (1, 2),
+    max_features = 5000
+)
+
+# CORREÇÃO CRÍTICA: Use .iloc[:, 0] ou ['texto_limpo'] para obter a Série de Strings
+# O .iloc[:, 0] pega a primeira (e única) coluna, convertendo-a em uma Série.
+X_treino_series = X_treino.iloc[:, 0]
+X_teste_series = X_teste.iloc[:, 0]
+
+# Aplicação apenas nos dados de IDF de Treino (agora com a Série de Strings correta)
+X_treino_tfidf = tfidf_vector.fit_transform(X_treino_series)
+
+# Transfomação nos dados de Teste
+X_teste_tfidf = tfidf_vector.transform(X_teste_series)
+
+# ... (restante do código)
+
+
+#################################################################################
+O formato dos dados de treino (3618, 5000) e de teste (1551, 5000) é exatamente o esperado, mostrando que você tem 3618 e 1551 amostras, respectivamente, e um vocabulário de 5000 features.
+
+Métrica,Classe 0 (Não SPAM/HAM),Classe 1 (SPAM),O que significa
+Precision,0.96,1.00,"Excelente! Quando o modelo diz que é SPAM (Classe 1), ele está certo 100% das vezes. (Nenhum HAM foi classificado como SPAM - Falso Positivo ZERO)."
+Recall,1.00,0.69,Ponto de Foco. O modelo só conseguiu capturar 69% dos SPAMs reais. 31% dos SPAMs reais foram classificados como HAM (Falso Negativo).
+F1-Score,0.98,0.82,"Média harmônica, reflete a qualidade geral. O F1-score de 0.82 é bom, mas é limitado pelo Recall."
+
+--
+**Interpretação para Detecção de SPAM**
+Segurança do Usuário (Precision): A Precision de 1.00 na classe SPAM (1) é maravilhosa. Significa que o modelo nunca comete Falso Positivo; ele nunca marca uma mensagem legítima (HAM) como SPAM. Isso é crucial para a satisfação do usuário.
+
+Eficácia (Recall): O Recall de 0.69 significa que o modelo ainda está deixando passar 31% dos SPAMs para a caixa de entrada do usuário (Falsos Negativos). Este é o principal objetivo de melhoria.
+--
